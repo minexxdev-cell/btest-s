@@ -15,12 +15,17 @@ RUN apk add --no-cache \
 
 RUN mkdir -p /run/nginx
 
-# Install PHP extensions
-RUN docker-php-ext-install \
+# Install additional dependencies for PHP extensions
+RUN apk add --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev
+
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
     pdo \
     pdo_mysql \
     mbstring \
-    tokenizer \
     bcmath \
     gd \
     pcntl \
