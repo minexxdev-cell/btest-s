@@ -1,6 +1,21 @@
 FROM php:8.1-fpm-alpine
 
-RUN apk add --no-cache nginx wget oniguruma-dev
+RUN apk add --no-cache nginx wget
+
+# Install required dependencies including oniguruma
+RUN apk add --no-cache \
+    oniguruma-dev \
+    libxml2-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql mbstring
+
+# Install tokenizer separately with proper build dependencies
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        oniguruma-dev \
+    && docker-php-ext-install tokenizer \
+    && apk del .build-deps
 
 RUN mkdir -p /run/nginx
 
@@ -12,11 +27,6 @@ COPY . /app
 RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev
-
-# Install build dependencies and required packages
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS oniguruma-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring tokenizer \
-    && apk del .build-deps
 
 RUN chown -R www-data: /app
 
