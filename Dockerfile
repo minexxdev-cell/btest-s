@@ -1,33 +1,32 @@
 FROM php:8.1-fpm-alpine
 
-RUN apk add --no-cache nginx wget
-
-# Install required dependencies including oniguruma
+# Install system dependencies
 RUN apk add --no-cache \
+    nginx \
+    wget \
     oniguruma-dev \
     libxml2-dev
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mbstring
+# Create necessary directories
+RUN mkdir -p /run/nginx /app
 
-# Install tokenizer separately with proper build dependencies
-RUN apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        oniguruma-dev \
-    && docker-php-ext-install tokenizer \
-    && apk del .build-deps
-
-RUN mkdir -p /run/nginx
-
+# Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir -p /app
+# Copy application code
 COPY . /app
 
-RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
+# Install Composer
+RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install PHP extensions (excluding tokenizer which is causing issues)
+RUN docker-php-ext-install pdo pdo_mysql mbstring
+
+# Install application dependencies
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev
 
+# Set proper permissions
 RUN chown -R www-data: /app
 
 CMD sh /app/docker/startup.sh
