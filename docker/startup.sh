@@ -1,9 +1,16 @@
 #!/bin/sh
 
-sed -i "s,LISTEN_PORT,$PORT,g" /etc/nginx/nginx.conf
+# Set the port from environment variable (default to 8080)
+PORT=${PORT:-8080}
 
-php-fpm -D
+echo "Starting Laravel application on port $PORT"
 
-# while ! nc -w 1 -z 127.0.0.1 9000; do sleep 0.1; done;
+# Ensure correct permissions
+chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chmod -R 775 /app/storage /app/bootstrap/cache
 
-nginx
+# Update nginx configuration with the correct port
+sed -i "s/8080/$PORT/g" /etc/nginx/nginx.conf
+
+# Start supervisord to manage both PHP-FPM and Nginx
+exec /usr/bin/supervisord -c /etc/supervisord.conf
