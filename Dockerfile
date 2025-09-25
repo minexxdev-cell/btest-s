@@ -30,11 +30,21 @@ RUN docker-php-ext-install pdo pdo_mysql mbstring
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev --optimize-autoloader
 
-# Install npm dependencies and build assets (if using Laravel Mix)
+# Handle npm dependencies and asset compilation
 RUN cd /app && \
     if [ -f "package.json" ]; then \
-        npm install --production && \
-        npm run production; \
+        echo "package.json found, installing npm dependencies..."; \
+        npm install; \
+        if npm run --silent production > /dev/null 2>&1; then \
+            echo "Running npm run production..."; \
+            npm run production; \
+            echo "Pruning dev dependencies..."; \
+            npm prune --production; \
+        else \
+            echo "No production script found or Laravel Mix not available, skipping asset compilation"; \
+        fi; \
+    else \
+        echo "No package.json found, skipping npm install"; \
     fi
 
 # Create symlink for storage (if needed)
