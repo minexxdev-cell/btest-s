@@ -7,7 +7,9 @@ RUN apk add --no-cache \
     netcat-openbsd \
     oniguruma-dev \
     libxml2-dev \
-    curl
+    curl \
+    nodejs \
+    npm
 
 # Create necessary directories
 RUN mkdir -p /run/nginx /app /var/log/nginx
@@ -28,6 +30,17 @@ RUN docker-php-ext-install pdo pdo_mysql mbstring
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev --optimize-autoloader
 
+# Install npm dependencies and build assets (if using Laravel Mix)
+RUN cd /app && \
+    if [ -f "package.json" ]; then \
+        npm install --production && \
+        npm run production; \
+    fi
+
+# Create symlink for storage (if needed)
+RUN cd /app && \
+    php artisan storage:link || true
+
 # Set proper permissions
 RUN chown -R www-data:www-data /app
 RUN chmod -R 755 /app/storage /app/bootstrap/cache
@@ -38,6 +51,10 @@ RUN if [ -d "/app/public/AdminLTE-2" ]; then \
         chmod -R 755 /app/public/AdminLTE-2; \
         chown -R www-data:www-data /app/public/AdminLTE-2; \
     fi
+
+# Ensure all public assets have proper permissions
+RUN find /app/public -type f -exec chmod 644 {} \;
+RUN find /app/public -type d -exec chmod 755 {} \;
 
 # Make startup script executable
 RUN chmod +x /app/docker/startup.sh
