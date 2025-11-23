@@ -2,6 +2,6 @@
     <div class="pull-right hidden-xs">
         <b>Version</b> 1.0.00
     </div>
-    <strong>&copy; {{ date('Y') }} <a href="/">Yves</a>.</strong> All rights
+    <strong>&copy; {{ date('Y') }} <a href="/">Btech Consult</a>.</strong> All rights
     reserved.
 </footer>
