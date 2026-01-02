@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Models\Setting;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;  // Add this line
+use App\Models\Produk;                 // Add this line
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,12 +33,19 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-         if (config('app.env') === 'production') {
-        \URL::forceScheme('https');
+ public function boot()
+{
+    if ($this->app->environment('production')) {
+        \Illuminate\Support\Facades\URL::forceScheme('https');
     }
-        
-        //
-    }
+       // Share low stock products with all views
+        View::composer('*', function ($view) {
+            $lowStockProducts = Produk::where('stok', '<=', 1)
+                ->leftJoin('kategori', 'kategori.id_kategori', 'produk.id_kategori')
+                ->select('produk.*', 'nama_kategori')
+                ->get();
+            
+            $view->with('lowStockProducts', $lowStockProducts);
+        });
+}
 }

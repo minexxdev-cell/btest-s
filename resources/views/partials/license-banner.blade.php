@@ -7,7 +7,7 @@
             <h4><i class="icon fa fa-exclamation-triangle"></i> License Key Expiration Warning!</h4>
             <p>
                 <strong>Your license key is about to expire 
-                @if($daysUntilExpiry == 0)
+                @if($daysUntilExpiry == 0) 
                     today
                 @elseif($daysUntilExpiry == 1)
                     in {{ $daysUntilExpiry }} day

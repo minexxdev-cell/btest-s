@@ -16,9 +16,10 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $kategori = Kategori::all()->pluck('nama_kategori', 'id_kategori');
+         $kategori = Kategori::all()->pluck('nama_kategori', 'id_kategori');
+        $lowStockProducts = $this->getLowStockProducts();
 
-        return view('produk.index', compact('kategori'));
+    return view('produk.index', compact('kategori', 'lowStockProducts'));
     }
 
     public function data()
@@ -162,4 +163,13 @@ class ProdukController extends Controller
         $pdf->setPaper('a4', 'potrait');
         return $pdf->stream('product.pdf');
     }
+    public function getLowStockProducts()
+{
+    $lowStockProducts = Produk::where('stok', '<=', 1)
+        ->leftJoin('kategori', 'kategori.id_kategori', 'produk.id_kategori')
+        ->select('produk.*', 'nama_kategori')
+        ->get();
+    
+    return $lowStockProducts;
+}
 }

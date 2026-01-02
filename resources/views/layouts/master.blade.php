@@ -59,10 +59,13 @@
 
             <!-- Main content -->
             <section class="content">
-                
+
                 <!-- Include the license banner on all pages -->
                 @include('partials.license-banner')
-                
+
+                <!-- Include low stock alert -->
+                @include('partials.low-stock-alert')
+
                 @yield('content')
 
             </section>
