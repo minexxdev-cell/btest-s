@@ -51,9 +51,14 @@ RUN cd /app && \
 RUN cd /app && \
     php artisan storage:link || true
 
+# Create logs directory with proper permissions
+RUN mkdir -p /app/storage/logs && \
+    chown -R www-data:www-data /app/storage/logs && \
+    chmod -R 775 /app/storage/logs
+
 # Set proper permissions
 RUN chown -R www-data:www-data /app
-RUN chmod -R 755 /app/storage /app/bootstrap/cache
+RUN chmod -R 775 /app/storage /app/bootstrap/cache
 RUN chmod -R 755 /app/public
 
 # Ensure AdminLTE assets exist and have proper permissions
