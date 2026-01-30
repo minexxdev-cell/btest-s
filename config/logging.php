@@ -37,13 +37,13 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => getenv('PORT') ? ['errorlog'] : ['single'],
             'ignore_exceptions' => false,
         ],
 
         'single' => [
             'driver' => 'single',
-            'path' => env('APP_ENV') === 'production' && getenv('KUBERNETES_SERVICE_HOST') || getenv('PORT') ? '/tmp/laravel.log' : storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
