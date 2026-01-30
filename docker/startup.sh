@@ -8,7 +8,7 @@ sed -i "s,LISTEN_PORT,$PORT,g" /etc/nginx/nginx.conf
 # Set proper permissions for all files
 echo "Setting permissions..."
 chown -R www-data:www-data /app
-chmod -R 755 /app/storage /app/bootstrap/cache
+chmod -R 775 /app/storage /app/bootstrap/cache
 chmod -R 755 /app/public
 
 # Ensure AdminLTE and other assets have proper permissions
