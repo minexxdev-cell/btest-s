@@ -44,6 +44,11 @@
                     <i class="fa fa-truck"></i> <span>Supplier</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('produk.index') }}">
+                    <i class="fa fa-cubes"></i> <span>Stock</span>
+                </a>
+            </li>
             <li class="header">TRANSACTION</li>
             <li>
                 <a href="{{ route('pengeluaran.index') }}">

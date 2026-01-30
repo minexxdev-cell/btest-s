@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    Product List
+    Product List & Stock Management
 @endsection
 
 @section('breadcrumb')
@@ -15,9 +15,10 @@
         <div class="box">
             <div class="box-header with-border">
                 <div class="btn-group">
-                    <button onclick="addForm('{{ route('produk.store') }}')" class="btn btn-success  btn-flat"><i class="fa fa-plus-circle"></i> Add New Product</button>
-                    <button onclick="deleteSelected('{{ route('produk.delete_selected') }}')" class="btn btn-danger  btn-flat"><i class="fa fa-trash"></i> Delete</button>
-                    <button onclick="cetakBarcode('{{ route('produk.cetak_barcode') }}')" class="btn btn-warning  btn-flat"><i class="fa fa-barcode"></i> Print Barcode</button>
+                    <button onclick="addForm('{{ route('produk.store') }}')" class="btn btn-success btn-flat"><i class="fa fa-plus-circle"></i> Add New Product</button>
+                    <button onclick="deleteSelected('{{ route('produk.delete_selected') }}')" class="btn btn-danger btn-flat"><i class="fa fa-trash"></i> Delete</button>
+                    <button onclick="cetakBarcode('{{ route('produk.cetak_barcode') }}')" class="btn btn-warning btn-flat"><i class="fa fa-barcode"></i> Print Barcode</button>
+                    <button onclick="printStockReport('{{ route('produk.print_stock_report') }}')" class="btn btn-info btn-flat"><i class="fa fa-print"></i> Print Stock Report</button>
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -25,18 +26,22 @@
                     @csrf
                     <table class="table table-stiped table-bordered table-hover">
                         <thead>
-                            <th width="5%">
+                            <th width="3%">
                                 <input type="checkbox" name="select_all" id="select_all">
                             </th>
-                            <th width="5%">#</th>
+                            <th width="3%">#</th>
                             <th>Code</th>
                             <th>Name</th>
                             <th>Category</th>
                             <th>Brand</th>
-                            <th>Purchase Price</th>
-                            <th>Selling Price</th>
-                            <th>Discount</th>
-                            <th>Stock</th>
+                            <th>Buy Price</th>
+                            <th>Sell Price</th>
+                            <th>Opening Stock</th>
+                            <th>Stock In</th>
+                            <th>Stock Out</th>
+                            <th>Damaged</th>
+                            <th>Closing Stock</th>
+                            <th>Current Stock</th>
                             <th width="15%"><i class="fa fa-cog"></i></th>
                         </thead>
                     </table>
@@ -47,6 +52,8 @@
 </div>
 
 @includeIf('produk.form')
+@includeIf('produk.stock_movement_modal')
+@includeIf('produk.stock_history_modal')
 @endsection
 
 @push('scripts')
@@ -71,10 +78,15 @@
                 {data: 'merk'},
                 {data: 'harga_beli'},
                 {data: 'harga_jual'},
-                {data: 'diskon'},
-                {data: 'stok'},
+                {data: 'stok_awal'},
+                {data: 'stok_masuk'},
+                {data: 'stok_keluar'},
+                {data: 'stok_rusak'},
+                {data: 'stok_akhir'},
+                {data: 'stok_display'},
                 {data: 'aksi', searchable: false, sortable: false},
-            ]
+            ],
+            scrollX: true
         });
 
         $('#modal-form').validator().on('submit', function (e) {
@@ -86,6 +98,21 @@
                     })
                     .fail((errors) => {
                         alert('Unable to save data');
+                        return;
+                    });
+            }
+        });
+
+        $('#modal-stock-movement').validator().on('submit', function (e) {
+            if (! e.preventDefault()) {
+                $.post($('#modal-stock-movement form').attr('action'), $('#modal-stock-movement form').serialize())
+                    .done((response) => {
+                        $('#modal-stock-movement').modal('hide');
+                        table.ajax.reload();
+                        alert('Stock updated successfully');
+                    })
+                    .fail((errors) => {
+                        alert('Unable to update stock');
                         return;
                     });
             }
@@ -131,6 +158,23 @@
             });
     }
 
+    function stockMovement(url) {
+        $('#modal-stock-movement').modal('show');
+        $('#modal-stock-movement form')[0].reset();
+        $('#modal-stock-movement form').attr('action', url);
+        
+        // Get product info
+        $.get(url.replace('/stock/movement', ''))
+            .done((response) => {
+                $('#product-name').text(response.nama_produk);
+                $('#current-stock').text(response.stok);
+            });
+    }
+
+    function stockHistory(url) {
+        window.location.href = url;
+    }
+
     function deleteData(url) {
         if (confirm('Are you sure you want to delete selected data?')) {
             $.post(url, {
@@ -149,7 +193,7 @@
 
     function deleteSelected(url) {
         if ($('input:checked').length > 1) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
+            if (confirm('Are you sure you want to delete selected data?')) {
                 $.post(url, $('.form-produk').serialize())
                     .done((response) => {
                         table.ajax.reload();
@@ -178,6 +222,10 @@
                 .attr('action', url)
                 .submit();
         }
+    }
+
+    function printStockReport(url) {
+        window.open(url, '_blank');
     }
 </script>
 @endpush

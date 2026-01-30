@@ -127,6 +127,13 @@ Route::group(['middleware' => ['check.license']], function () {
             Route::post('/produk/cetak-barcode', [ProdukController::class, 'cetakBarcode'])->name('produk.cetak_barcode');
             Route::resource('/produk', ProdukController::class);
 
+            Route::get('/produk/{id}/stock/movement', [ProdukController::class, 'stockMovementForm'])->name('produk.stock.movement');
+            Route::post('/produk/{id}/stock/movement', [ProdukController::class, 'processStockMovement'])->name('produk.stock.process');
+            Route::get('/produk/{id}/stock/history', [ProdukController::class, 'stockHistory'])->name('produk.stock.history');
+            Route::get('/produk/print/stock-report', [ProdukController::class, 'printStockReport'])->name('produk.print_stock_report');
+            Route::post('/produk/reset-daily-stock', [ProdukController::class, 'resetDailyStock'])->name('produk.reset_daily_stock');
+
+
             Route::get('/member/data', [MemberController::class, 'data'])->name('member.data');
             Route::post('/member/cetak-member', [MemberController::class, 'cetakMember'])->name('member.cetak_member');
             Route::resource('/member', MemberController::class);
