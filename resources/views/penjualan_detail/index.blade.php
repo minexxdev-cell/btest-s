@@ -302,15 +302,15 @@ Sales Transactions
 
         $.get(`{{ url('/transaksi/loadform') }}/${diskon}/${$('.total').text()}/${diterima}`)
             .done(response => {
-                $('#totalrp').val('$ '+ response.totalrp);
-                $('#bayarrp').val('$ '+ response.bayarrp);
+                $('#totalrp').val('Rwf '+ response.totalrp);
+                $('#bayarrp').val('Rwf '+ response.bayarrp);
                 $('#bayar').val(response.bayar);
-                $('.tampil-bayar').text('Pay: $ '+ response.bayarrp);
+                $('.tampil-bayar').text('Pay: Rwf '+ response.bayarrp);
                 $('.tampil-terbilang').text(response.terbilang);
 
-                $('#kembali').val('$'+ response.kembalirp);
+                $('#kembali').val('Rwf '+ response.kembalirp);
                 if ($('#diterima').val() != 0) {
-                    $('.tampil-bayar').text('Return: $ '+ response.kembalirp);
+                    $('.tampil-bayar').text('Return: Rwf '+ response.kembalirp);
                     $('.tampil-terbilang').text(response.kembali_terbilang);
                 }
             })

@@ -28,10 +28,10 @@ class PembelianController extends Controller
                 return format_uang($pembelian->total_item);
             })
             ->addColumn('total_harga', function ($pembelian) {
-                return '$ '. format_uang($pembelian->total_harga);
+                return 'Rwf '. format_uang($pembelian->total_harga);
             })
             ->addColumn('bayar', function ($pembelian) {
-                return '$ '. format_uang($pembelian->bayar);
+                return 'Rwf '. format_uang($pembelian->bayar);
             })
             ->addColumn('tanggal', function ($pembelian) {
                 return tanggal_indonesia($pembelian->created_at, false);

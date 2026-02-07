@@ -27,10 +27,10 @@ class PenjualanController extends Controller
                 return format_uang($penjualan->total_item);
             })
             ->addColumn('total_harga', function ($penjualan) {
-                return '$ '. format_uang($penjualan->total_harga);
+                return 'Rwf '. format_uang($penjualan->total_harga);
             })
             ->addColumn('bayar', function ($penjualan) {
-                return '$ '. format_uang($penjualan->bayar);
+                return 'Rwf '. format_uang($penjualan->bayar);
             })
             ->addColumn('tanggal', function ($penjualan) {
                 return tanggal_indonesia($penjualan->created_at, false);

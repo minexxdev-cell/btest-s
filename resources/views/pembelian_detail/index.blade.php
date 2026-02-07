@@ -259,10 +259,10 @@ Purchase
 
         $.get(`{{ url('/pembelian_detail/loadform') }}/${diskon}/${$('.total').text()}`)
             .done(response => {
-                $('#totalrp').val('$ '+ response.totalrp);
-                $('#bayarrp').val('$ '+ response.bayarrp);
+                $('#totalrp').val('Rwf '+ response.totalrp);
+                $('#bayarrp').val('Rwf '+ response.bayarrp);
                 $('#bayar').val(response.bayar);
-                $('.tampil-bayar').text('$ '+ response.bayarrp);
+                $('.tampil-bayar').text('Rwf '+ response.bayarrp);
                 $('.tampil-terbilang').text(response.terbilang);
             })
             .fail(errors => {
